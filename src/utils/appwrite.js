@@ -86,7 +86,7 @@ const appwriteService = {
                 zip: formData.zip || '',
                 ssn: (formData.ssn || '').substring(0, 10),  // Limit to 10 characters
                 age: formData.age ? parseInt(formData.age) : 0,
-                position: formData.position || '',
+                position: (formData.position || '').substring(0, 10),  // Limit to 10 characters
                 experience: formData.experience || '',
                 availability: formData.availability || '',
                 dlFrontId: dlFrontId,
