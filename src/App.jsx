@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ApplicationForm from './components/ApplicationForm';
 import ThankYou from './components/ThankYou';
 import Admin from './components/Admin';
+import Login from './components/Login';
 import './styles.css';
 
 const App = () => {
@@ -11,9 +12,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<ApplicationForm />} />
         <Route path="/thank-you" element={<ThankYou />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/admin/*" element={<Admin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="/radmin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );

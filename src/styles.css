@@ -617,3 +617,43 @@ details[open] summary::after {
   margin-bottom: 0.5rem;
   color: var(--text-secondary);
 }
+
+/* Login page styling */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.login-card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 2rem auto;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.login-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  text-align: center;
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.error-alert {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Client, Account, Databases, Storage } from 'appwrite';
+import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 
 const Admin = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const navigate = useNavigate();
 
   // Initialize Appwrite
   const client = new Client();
@@ -31,49 +31,26 @@ const Admin = () => {
       try {
         const session = await account.getSession('current');
         if (session) {
-          setIsLoggedIn(true);
           loadApplications();
+        } else {
+          // Redirect to login if not authenticated
+          navigate('/login');
         }
       } catch (error) {
         console.log('No active session');
-        setIsLoggedIn(false);
+        // Redirect to login if not authenticated
+        navigate('/login');
       }
     };
 
     checkSession();
-  }, []);
-
-  // Handle login form input changes
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle login form submission
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      await account.createEmailSession(loginForm.email, loginForm.password);
-      setIsLoggedIn(true);
-      loadApplications();
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Invalid email or password. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [navigate]);
 
   // Handle logout
   const handleLogout = async () => {
     try {
       await account.deleteSession('current');
-      setIsLoggedIn(false);
-      setApplications([]);
-      setSelectedApp(null);
+      navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -279,79 +256,6 @@ const Admin = () => {
       </div>
     );
   };
-
-  // Login form
-  if (!isLoggedIn) {
-    return (
-      <div className="admin-container">
-        <header className="header">
-          <div className="header-content">
-            <h1>Admin Dashboard</h1>
-            <p>Please log in to access the admin dashboard</p>
-          </div>
-        </header>
-        
-        <div className="container">
-          <div className="form" style={{ maxWidth: '500px', margin: '2rem auto' }}>
-            <h2>Admin Login</h2>
-            
-            {error && (
-              <div className="error-alert" style={{ 
-                backgroundColor: '#fee2e2', 
-                color: '#b91c1c', 
-                padding: '0.75rem', 
-                borderRadius: 'var(--radius)', 
-                marginBottom: '1rem' 
-              }}>
-                {error}
-              </div>
-            )}
-            
-            <form onSubmit={handleLogin}>
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  value={loginForm.email} 
-                  onChange={handleLoginChange} 
-                  required 
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  name="password" 
-                  value={loginForm.password} 
-                  onChange={handleLoginChange} 
-                  required 
-                />
-              </div>
-              
-              <button 
-                type="submit" 
-                className="btn btn-primary" 
-                disabled={loading}
-                style={{ width: '100%' }}
-              >
-                {loading ? 'Logging in...' : 'Log In'}
-              </button>
-            </form>
-          </div>
-        </div>
-        
-        <footer className="footer">
-          <div className="footer-content">
-            <p>&copy; 2025 AKG Consulting. All rights reserved.</p>
-          </div>
-        </footer>
-      </div>
-    );
-  }
 
   return (
     <div className="admin-container">
