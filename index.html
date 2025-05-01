@@ -246,6 +246,42 @@
           </div>
 
           <div class="form-group">
+            <label for="ssn">Social Security Number (SSN) *</label>
+            <input
+              type="text"
+              id="ssn"
+              name="ssn"
+              required
+              placeholder="XXX-XX-XXXX"
+              pattern="\d{3}-\d{2}-\d{4}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="dlFront">Driver's License - Front *</label>
+            <input
+              type="file"
+              id="dlFront"
+              name="dlFront"
+              required
+              accept="image/*"
+            />
+            <small class="file-info">Upload any size image. (Note: Only file information will be sent via email)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="dlBack">Driver's License - Back *</label>
+            <input
+              type="file"
+              id="dlBack"
+              name="dlBack"
+              required
+              accept="image/*"
+            />
+            <small class="file-info">Upload any size image. (Note: Only file information will be sent via email)</small>
+          </div>
+
+          <div class="form-group">
             <label>Gender *</label>
             <div class="radio-group">
               <label class="radio">
@@ -373,6 +409,27 @@
         </div>
       </div>
     </footer>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 class="modal-title">File Submission Error</h3>
+        </div>
+        <div class="modal-body">
+          <p id="errorModalMessage">There was an error with your file submission. The file may be too large for our system to process.</p>
+          <p>Your form data has been saved, but we were unable to process your file uploads. Please note that only the file information (name and size) will be included in your submission.</p>
+        </div>
+        <div class="modal-footer">
+          <button id="errorModalClose" class="modal-button primary">Understand & Continue</button>
+        </div>
+      </div>
+    </div>
 
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>

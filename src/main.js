@@ -6,6 +6,41 @@ document.addEventListener('DOMContentLoaded', function() {
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const submitBtn = document.getElementById('submitBtn');
+  const errorModal = document.getElementById('errorModal');
+  const errorModalMessage = document.getElementById('errorModalMessage');
+  const errorModalClose = document.getElementById('errorModalClose');
+
+  // Modal functions
+  function showErrorModal(message) {
+    if (message) {
+      errorModalMessage.textContent = message;
+    }
+    errorModal.classList.add('visible');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+  }
+
+  function hideErrorModal() {
+    errorModal.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  // Add event listener to close modal
+  errorModalClose.addEventListener('click', hideErrorModal);
+
+  // Add file size information display for file inputs
+  document.querySelectorAll('input[type="file"]').forEach(fileInput => {
+    fileInput.addEventListener('change', function() {
+      const fileInfo = this.nextElementSibling;
+      if (fileInfo && fileInfo.classList.contains('file-info')) {
+        if (this.files.length > 0) {
+          const fileSizeMB = (this.files[0].size / (1024 * 1024)).toFixed(2);
+          fileInfo.textContent = `Selected file: ${this.files[0].name} (${fileSizeMB} MB)`;
+        } else {
+          fileInfo.textContent = 'No file size limit. Upload any size image.';
+        }
+      }
+    });
+  });
 
   let currentSection = 0;
   const totalSections = sections.length;
@@ -75,6 +110,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
       } else if (input.value && !/^\d{10,15}$/.test(input.value.replace(/[^0-9]/g, ''))) {
         showErrorMessage(input, 'Please enter a valid phone number');
+        return false;
+      }
+    } else if (input.id === 'ssn') {
+      if (input.required && !input.value) {
+        showErrorMessage(input, 'This field is required');
+        return false;
+      } else if (input.value && !/^\d{3}-\d{2}-\d{4}$/.test(input.value)) {
+        showErrorMessage(input, 'Please enter a valid SSN in format XXX-XX-XXXX');
+        return false;
+      }
+    } else if (input.type === 'file') {
+      if (input.required && (!input.files || input.files.length === 0)) {
+        showErrorMessage(input, 'Please upload a file');
         return false;
       }
     } else if (input.type === 'number') {
@@ -174,62 +222,113 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    
     try {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
-      
       // Collect form data for the thank you page
       const formData = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         position: document.getElementById('position').value,
+        ssn: document.getElementById('ssn').value,
+        // We don't store the actual file data in localStorage for privacy reasons
+        dlFrontUploaded: !!document.getElementById('dlFront').files.length,
+        dlBackUploaded: !!document.getElementById('dlBack').files.length
       };
       
       // Store form data in localStorage for the thank you page
       localStorage.setItem('formData', JSON.stringify(formData));
       
-      // Use EmailJS's sendForm method which directly sends the form
-      // This ensures all form fields are sent as they are
-      const response = await emailjs.sendForm(
+      // Create a new form without the file inputs for EmailJS
+      // This is because EmailJS has a 50KB limit on variables
+      const emailForm = new FormData();
+      
+      // Add all form fields except files
+      for (const pair of new FormData(form)) {
+        const [name, value] = pair;
+        // Skip file inputs - we'll handle them separately
+        if (!(value instanceof File)) {
+          emailForm.append(name, value);
+        }
+      }
+      
+      // Add file metadata instead of actual files
+      const dlFront = document.getElementById('dlFront').files[0];
+      const dlBack = document.getElementById('dlBack').files[0];
+      
+      if (dlFront) {
+        emailForm.append('dlFrontName', dlFront.name);
+        emailForm.append('dlFrontSize', formatFileSize(dlFront.size));
+      }
+      
+      if (dlBack) {
+        emailForm.append('dlBackName', dlBack.name);
+        emailForm.append('dlBackSize', formatFileSize(dlBack.size));
+      }
+      
+      // Helper function to format file size
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+        else return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+      
+      // Create a temporary form element for EmailJS
+      const tempForm = document.createElement('form');
+      for (const [name, value] of emailForm.entries()) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = name;
+        input.value = value;
+        tempForm.appendChild(input);
+      }
+      
+      // Add a note about files
+      const fileNote = document.createElement('input');
+      fileNote.type = 'text';
+      fileNote.name = 'fileNote';
+      fileNote.value = 'Files were too large to send via email. Please contact the applicant to obtain the files.';
+      tempForm.appendChild(fileNote);
+      
+      // Configure EmailJS to handle the form without large files
+      emailjs.sendForm(
         "service_bmrfqqn",
         "template_zij5nm9",
-        form,
+        tempForm,
         "6kO0awWz7xlAdFWlf"  // Public key
-      );
-      
-      if (response.status === 200) {
-        // Redirect to thank you page
-        window.location.href = '/thank-you.html';
-      } else {
-        throw new Error(`Failed to submit form: ${response.text}`);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      
-      // Create an error notification
-      const notification = document.createElement('div');
-      notification.className = 'notification error';
-      notification.innerHTML = `
-        <div class="notification-content">
-          <strong>Error!</strong> ${error.message || 'There was an error submitting the form. Please try again.'}
-          <button class="close-notification">&times;</button>
-        </div>
-      `;
-      document.body.appendChild(notification);
-      
-      // Auto-remove notification after 5 seconds
-      setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 500);
-      }, 5000);
-      
-      // Add close button functionality
-      notification.querySelector('.close-notification').addEventListener('click', () => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 500);
+      ).then(function(response) {
+        if (response.status === 200) {
+          // Redirect to thank you page
+          window.location.href = '/thank-you.html';
+        } else {
+          throw new Error(`Failed to submit form: ${response.text}`);
+        }
+      }).catch(function(error) {
+        console.error('Error submitting form:', error);
+        
+        // Show error in modal
+        let errorMessage = 'There was an error submitting the form. Please try again.';
+        
+        // Check for specific error types
+        if (error.status === 413) {
+          errorMessage = 'The files you uploaded are too large for our system to process. Only file information will be included in your submission.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        showErrorModal(errorMessage);
+      }).finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
       });
-    } finally {
+    } catch (error) {
+      console.error('Error preparing form submission:', error);
+      
+      // Show error in modal
+      showErrorModal(error.message || 'There was an error preparing your form. Please try again.');
+      
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit Application';
     }
