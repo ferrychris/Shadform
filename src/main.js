@@ -1,352 +1,278 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('applicationForm');
-  const sections = document.querySelectorAll('.form-section');
-  const progress = document.getElementById('formProgress');
-  const currentStepSpan = document.getElementById('currentStep');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const submitBtn = document.getElementById('submitBtn');
-  const errorModal = document.getElementById('errorModal');
-  const errorModalMessage = document.getElementById('errorModalMessage');
-  const errorModalClose = document.getElementById('errorModalClose');
+// Import Appwrite service
+import { appwriteService } from './utils/appwrite.js';
 
-  // Modal functions
-  function showErrorModal(message) {
-    if (message) {
-      errorModalMessage.textContent = message;
-    }
-    errorModal.classList.add('visible');
-    document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
-  }
+// Form elements
+const form = document.getElementById('application-form');
+const sections = document.querySelectorAll('.form-section');
+const progressBar = document.getElementById('progress');
+const progressText = document.getElementById('progress-text');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const submitBtn = document.getElementById('submit-btn');
 
-  function hideErrorModal() {
-    errorModal.classList.remove('visible');
-    document.body.style.overflow = '';
-  }
+// Modal elements
+const errorModal = document.getElementById('error-modal');
+const errorMessage = document.getElementById('error-message');
+const closeModalBtn = document.getElementById('close-modal');
 
-  // Add event listener to close modal
-  errorModalClose.addEventListener('click', hideErrorModal);
+// Form state
+let currentSection = 0;
+const totalSections = sections.length;
 
-  // Add file size information display for file inputs
-  document.querySelectorAll('input[type="file"]').forEach(fileInput => {
-    fileInput.addEventListener('change', function() {
-      const fileInfo = this.nextElementSibling;
-      if (fileInfo && fileInfo.classList.contains('file-info')) {
-        if (this.files.length > 0) {
-          const fileSizeMB = (this.files[0].size / (1024 * 1024)).toFixed(2);
-          fileInfo.textContent = `Selected file: ${this.files[0].name} (${fileSizeMB} MB)`;
-        } else {
-          fileInfo.textContent = 'No file size limit. Upload any size image.';
-        }
+// Initialize form
+function initForm() {
+  updateProgress();
+  setupFileInputs();
+  setupFormNavigation();
+  setupFormValidation();
+}
+
+// Setup file input handlers
+function setupFileInputs() {
+  const fileInputs = document.querySelectorAll('input[type="file"]');
+  
+  fileInputs.forEach(input => {
+    const infoElement = document.getElementById(`${input.id}-info`);
+    
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Format file size
+        const size = formatFileSize(file.size);
+        infoElement.textContent = `${file.name} (${size})`;
+      } else {
+        infoElement.textContent = 'No file selected';
       }
     });
   });
+}
 
-  let currentSection = 0;
-  const totalSections = sections.length;
+// Format file size to human-readable format
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
-  function updateProgress() {
-    const progressPercentage = ((currentSection + 1) / totalSections) * 100;
-    progress.style.width = `${progressPercentage}%`;
-    currentStepSpan.textContent = currentSection + 1;
-  }
+// Setup form navigation
+function setupFormNavigation() {
+  prevBtn.addEventListener('click', goToPrevSection);
+  nextBtn.addEventListener('click', goToNextSection);
+  
+  // Close modal button
+  closeModalBtn.addEventListener('click', () => {
+    errorModal.classList.remove('visible');
+  });
+}
 
-  function showSection(index) {
-    sections.forEach((section, i) => {
-      section.classList.toggle('active', i === index);
-    });
-
-    prevBtn.disabled = index === 0;
-    nextBtn.style.display = index === totalSections - 1 ? 'none' : 'block';
-    submitBtn.style.display = index === totalSections - 1 ? 'block' : 'none';
-
+// Go to previous section
+function goToPrevSection() {
+  if (currentSection > 0) {
+    sections[currentSection].classList.remove('active');
+    currentSection--;
+    sections[currentSection].classList.add('active');
     updateProgress();
+    updateButtons();
   }
+}
 
-  // Clear all error messages in a section
-  function clearErrorMessages(sectionEl) {
-    const errorMessages = sectionEl.querySelectorAll('.error-message');
-    errorMessages.forEach(msg => {
-      msg.classList.remove('visible');
+// Go to next section
+function goToNextSection() {
+  if (validateSection(currentSection)) {
+    if (currentSection < totalSections - 1) {
+      sections[currentSection].classList.remove('active');
+      currentSection++;
+      sections[currentSection].classList.add('active');
+      updateProgress();
+      updateButtons();
+    }
+  } else {
+    showSectionErrors(currentSection);
+  }
+}
+
+// Update progress bar and text
+function updateProgress() {
+  const percentage = ((currentSection + 1) / totalSections) * 100;
+  progressBar.style.width = `${percentage}%`;
+  progressText.textContent = `Step ${currentSection + 1} of ${totalSections}`;
+}
+
+// Update navigation buttons
+function updateButtons() {
+  prevBtn.disabled = currentSection === 0;
+  
+  if (currentSection === totalSections - 1) {
+    nextBtn.style.display = 'none';
+    submitBtn.style.display = 'block';
+  } else {
+    nextBtn.style.display = 'block';
+    submitBtn.style.display = 'none';
+  }
+}
+
+// Setup form validation
+function setupFormValidation() {
+  form.addEventListener('submit', handleSubmit);
+  
+  // Add input validation on blur
+  const inputs = form.querySelectorAll('input, select, textarea');
+  inputs.forEach(input => {
+    input.addEventListener('blur', () => {
+      validateInput(input);
     });
     
-    const errorInputs = sectionEl.querySelectorAll('.error');
-    errorInputs.forEach(input => {
+    // Clear error on input
+    input.addEventListener('input', () => {
       input.classList.remove('error');
+      const errorElement = document.getElementById(`${input.id}-error`);
+      if (errorElement) {
+        errorElement.classList.remove('visible');
+      }
     });
-  }
+  });
+}
 
-  // Show error message for a specific input
-  function showErrorMessage(input, message) {
-    input.classList.add('error');
-    
-    // Check if error message element already exists
-    let errorElement = input.nextElementSibling;
-    if (!errorElement || !errorElement.classList.contains('error-message')) {
-      // Create new error message element
-      errorElement = document.createElement('div');
-      errorElement.className = 'error-message';
-      input.parentNode.insertBefore(errorElement, input.nextElementSibling);
+// Validate a specific form section
+function validateSection(sectionIndex) {
+  const section = sections[sectionIndex];
+  const inputs = section.querySelectorAll('input, select, textarea');
+  let isValid = true;
+  
+  inputs.forEach(input => {
+    if (!validateInput(input)) {
+      isValid = false;
     }
-    
-    errorElement.textContent = message;
-    errorElement.classList.add('visible');
-  }
+  });
+  
+  return isValid;
+}
 
-  // Validate a single input
-  function validateInput(input) {
-    if (input.type === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (input.required && !input.value) {
-        showErrorMessage(input, 'This field is required');
-        return false;
-      } else if (input.value && !emailRegex.test(input.value)) {
-        showErrorMessage(input, 'Please enter a valid email address');
-        return false;
-      }
-    } else if (input.type === 'tel') {
-      if (input.required && !input.value) {
-        showErrorMessage(input, 'This field is required');
-        return false;
-      } else if (input.value && !/^\d{10,15}$/.test(input.value.replace(/[^0-9]/g, ''))) {
-        showErrorMessage(input, 'Please enter a valid phone number');
-        return false;
-      }
-    } else if (input.id === 'ssn') {
-      if (input.required && !input.value) {
-        showErrorMessage(input, 'This field is required');
-        return false;
-      } else if (input.value && !/^\d{3}-\d{2}-\d{4}$/.test(input.value)) {
-        showErrorMessage(input, 'Please enter a valid SSN in format XXX-XX-XXXX');
-        return false;
-      }
-    } else if (input.type === 'file') {
-      if (input.required && (!input.files || input.files.length === 0)) {
-        showErrorMessage(input, 'Please upload a file');
-        return false;
-      }
-    } else if (input.type === 'number') {
-      if (input.required && !input.value) {
-        showErrorMessage(input, 'This field is required');
-        return false;
-      } else if (input.id === 'age' && input.value < 18) {
-        showErrorMessage(input, 'You must be at least 18 years old');
-        return false;
-      }
-    } else if (input.type === 'radio') {
-      // For radio buttons, we need to check if any in the group is checked
-      if (input.required) {
-        const name = input.name;
-        const radioGroup = document.querySelectorAll(`input[name="${name}"]`);
-        const isChecked = Array.from(radioGroup).some(radio => radio.checked);
-        if (!isChecked) {
-          showErrorMessage(input, 'Please select an option');
-          return false;
-        }
-      }
-    } else if (input.type === 'checkbox') {
-      if (input.required && !input.checked) {
-        showErrorMessage(input, 'This checkbox is required');
-        return false;
-      }
-    } else {
-      // Text, textarea, select, etc.
-      if (input.required && !input.value.trim()) {
-        showErrorMessage(input, 'This field is required');
-        return false;
-      }
-    }
-    
+// Validate a single input
+function validateInput(input) {
+  // Skip validation for optional fields
+  if (!input.required && !input.value) {
     return true;
   }
+  
+  const errorElement = document.getElementById(`${input.id}-error`);
+  let isValid = true;
+  
+  // Basic validation
+  if (input.required && !input.value) {
+    isValid = false;
+  } else if (input.type === 'email' && input.value) {
+    isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  } else if (input.type === 'tel' && input.value) {
+    isValid = /^[0-9\s\-\+\(\)]{10,15}$/.test(input.value);
+  } else if (input.id === 'ssn' && input.value) {
+    // Basic SSN validation (XXX-XX-XXXX)
+    isValid = /^\d{3}-\d{2}-\d{4}$/.test(input.value) || /^\d{9}$/.test(input.value);
+  } else if (input.id === 'zip' && input.value) {
+    isValid = /^\d{5}(-\d{4})?$/.test(input.value);
+  } else if (input.type === 'file' && input.required) {
+    isValid = input.files.length > 0;
+  } else if (input.type === 'checkbox' && input.required) {
+    isValid = input.checked;
+  } else if (input.type === 'radio' && input.required) {
+    const radioGroup = document.getElementsByName(input.name);
+    isValid = Array.from(radioGroup).some(radio => radio.checked);
+  }
+  
+  // Update UI based on validation
+  if (!isValid && errorElement) {
+    input.classList.add('error');
+    errorElement.classList.add('visible');
+  } else if (errorElement) {
+    input.classList.remove('error');
+    errorElement.classList.remove('visible');
+  }
+  
+  return isValid;
+}
 
-  prevBtn.addEventListener('click', () => {
-    if (currentSection > 0) {
-      currentSection--;
-      showSection(currentSection);
-    }
+// Show errors for a specific section
+function showSectionErrors(sectionIndex) {
+  const section = sections[sectionIndex];
+  const inputs = section.querySelectorAll('input, select, textarea');
+  
+  inputs.forEach(input => {
+    validateInput(input);
   });
+}
 
-  nextBtn.addEventListener('click', () => {
-    const currentSectionEl = sections[currentSection];
-    const inputs = currentSectionEl.querySelectorAll('input[required], select[required], textarea[required]');
-    
-    // Clear all previous error messages
-    clearErrorMessages(currentSectionEl);
-    
-    let isValid = true;
-
-    // Validate each required input
-    inputs.forEach(input => {
-      if (!validateInput(input)) {
-        isValid = false;
-      }
-    });
-
-    if (isValid && currentSection < totalSections - 1) {
-      currentSection++;
-      showSection(currentSection);
-      window.scrollTo(0, 0);
-    } else if (!isValid) {
-      // Scroll to the first error
-      const firstError = currentSectionEl.querySelector('.error');
-      if (firstError) {
-        firstError.focus();
-        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+// Handle form submission
+async function handleSubmit(e) {
+  e.preventDefault();
+  
+  // Validate all sections before submission
+  let isValid = true;
+  for (let i = 0; i < totalSections; i++) {
+    if (!validateSection(i)) {
+      isValid = false;
+      currentSection = i;
+      sections.forEach(section => section.classList.remove('active'));
+      sections[currentSection].classList.add('active');
+      updateProgress();
+      updateButtons();
+      showSectionErrors(i);
+      break;
     }
-  });
+  }
+  
+  if (!isValid) {
+    return;
+  }
+  
+  // Disable submit button to prevent multiple submissions
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+  
+  try {
+    // Collect form data
+    const formData = {
+      name: document.getElementById('name')?.value || '',
+      email: document.getElementById('email')?.value || '',
+      phone: document.getElementById('phone')?.value || '',
+      address: document.getElementById('address')?.value || '',
+      city: document.getElementById('city')?.value || '',
+      state: document.getElementById('state')?.value || '',
+      zip: document.getElementById('zip')?.value || '',
+      ssn: document.getElementById('ssn')?.value || '',
+      age: document.getElementById('age')?.value || '',
+      position: document.getElementById('position')?.value || '',
+      experience: document.getElementById('experience')?.value || '',
+      availability: document.querySelector('input[name="availability"]:checked')?.value || '',
+      dlFront: document.getElementById('dlFront')?.files[0] || null,
+      dlBack: document.getElementById('dlBack')?.files[0] || null,
+      submittedAt: new Date().toISOString()
+    };
+    
+    console.log('Submitting application with data:', formData);
+    
+    // Submit to Appwrite
+    const response = await appwriteService.createApplication(formData);
+    console.log('Application submitted successfully:', response);
+    
+    // Redirect to thank you page
+    window.location.href = '/thank-you.html';
+    
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    
+    // Show error modal
+    errorMessage.textContent = error.message || 'There was an error submitting your application. Please try again.';
+    errorModal.classList.add('visible');
+    
+    // Re-enable submit button
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Application';
+  }
+}
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Validate the final section
-    const finalSectionEl = sections[currentSection];
-    const finalInputs = finalSectionEl.querySelectorAll('input[required], select[required], textarea[required]');
-    
-    clearErrorMessages(finalSectionEl);
-    
-    let isValid = true;
-    finalInputs.forEach(input => {
-      if (!validateInput(input)) {
-        isValid = false;
-      }
-    });
-    
-    if (!isValid) {
-      const firstError = finalSectionEl.querySelector('.error');
-      if (firstError) {
-        firstError.focus();
-        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
-    
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-    
-    try {
-      // Collect form data for the thank you page
-      const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        position: document.getElementById('position').value,
-        ssn: document.getElementById('ssn').value,
-        // We don't store the actual file data in localStorage for privacy reasons
-        dlFrontUploaded: !!document.getElementById('dlFront').files.length,
-        dlBackUploaded: !!document.getElementById('dlBack').files.length
-      };
-      
-      // Store form data in localStorage for the thank you page
-      localStorage.setItem('formData', JSON.stringify(formData));
-      
-      // Create a new form without the file inputs for EmailJS
-      // This is because EmailJS has a 50KB limit on variables
-      const emailForm = new FormData();
-      
-      // Add all form fields except files
-      for (const pair of new FormData(form)) {
-        const [name, value] = pair;
-        // Skip file inputs - we'll handle them separately
-        if (!(value instanceof File)) {
-          emailForm.append(name, value);
-        }
-      }
-      
-      // Add file metadata instead of actual files
-      const dlFront = document.getElementById('dlFront').files[0];
-      const dlBack = document.getElementById('dlBack').files[0];
-      
-      if (dlFront) {
-        emailForm.append('dlFrontName', dlFront.name);
-        emailForm.append('dlFrontSize', formatFileSize(dlFront.size));
-      }
-      
-      if (dlBack) {
-        emailForm.append('dlBackName', dlBack.name);
-        emailForm.append('dlBackSize', formatFileSize(dlBack.size));
-      }
-      
-      // Helper function to format file size
-      function formatFileSize(bytes) {
-        if (bytes < 1024) return bytes + ' bytes';
-        else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
-        else return (bytes / 1048576).toFixed(2) + ' MB';
-      }
-      
-      // Create a temporary form element for EmailJS
-      const tempForm = document.createElement('form');
-      for (const [name, value] of emailForm.entries()) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.name = name;
-        input.value = value;
-        tempForm.appendChild(input);
-      }
-      
-      // Add a note about files
-      const fileNote = document.createElement('input');
-      fileNote.type = 'text';
-      fileNote.name = 'fileNote';
-      fileNote.value = 'Files were too large to send via email. Please contact the applicant to obtain the files.';
-      tempForm.appendChild(fileNote);
-      
-      // Configure EmailJS to handle the form without large files
-      emailjs.sendForm(
-        "service_bmrfqqn",
-        "template_zij5nm9",
-        tempForm,
-        "6kO0awWz7xlAdFWlf"  // Public key
-      ).then(function(response) {
-        if (response.status === 200) {
-          // Redirect to thank you page
-          window.location.href = '/thank-you.html';
-        } else {
-          throw new Error(`Failed to submit form: ${response.text}`);
-        }
-      }).catch(function(error) {
-        console.error('Error submitting form:', error);
-        
-        // Show error in modal
-        let errorMessage = 'There was an error submitting the form. Please try again.';
-        
-        // Check for specific error types
-        if (error.status === 413) {
-          errorMessage = 'The files you uploaded are too large for our system to process. Only file information will be included in your submission.';
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        
-        showErrorModal(errorMessage);
-      }).finally(function() {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Application';
-      });
-    } catch (error) {
-      console.error('Error preparing form submission:', error);
-      
-      // Show error in modal
-      showErrorModal(error.message || 'There was an error preparing your form. Please try again.');
-      
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Application';
-    }
-  });
-
-  // Add input event listeners to clear errors when user starts typing
-  document.querySelectorAll('input, select, textarea').forEach(input => {
-    input.addEventListener('input', function() {
-      if (this.classList.contains('error')) {
-        this.classList.remove('error');
-        const errorMessage = this.nextElementSibling;
-        if (errorMessage && errorMessage.classList.contains('error-message')) {
-          errorMessage.classList.remove('visible');
-        }
-      }
-    });
-  });
-
-  // Initialize first section
-  showSection(currentSection);
-});
+// Initialize the form when the DOM is loaded
+document.addEventListener('DOMContentLoaded', initForm);

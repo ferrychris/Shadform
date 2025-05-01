@@ -1,445 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AKG Consulting Job Application Form</title>
-    <link rel="stylesheet" href="/src/styles.css" />
-  </head>
-  <body>
-    <header class="header">
-      <div class="header-content animate-fade-in">
-        <h1>AKG Consulting</h1>
-        <p>Connecting top talent with leading employers</p>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AKG Consulting - Job Application Form</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1>AKG Consulting Job Application</h1>
+      <p>Join our team and be part of something great</p>
+    </div>
+  </header>
 
-    <main class="container animate-slide-up">
-      <details class="company-info">
+  <div class="container">
+    <div class="company-info">
+      <details>
         <summary>About AKG Consulting</summary>
         <div class="info-content">
-          <p>
-            I'm Temporary and permanent employee recruitment, simplified.
-            Scalable, integrated, customizable solutions for any labor category.
-            Increase effectiveness. Decrease risk. Streamline processes. Control
-            spends. AKG Consulting connects top talent with leading employers.
-          </p>
-
-          <h3>OUR CORE VALUES</h3>
-          <p>
-            Our profession demands the utmost in professionalism, trust, respect
-            and reliable service in regard to our customers – both clients and
-            consultants – and each other.
-          </p>
-
-          <h4>Delight Customers</h4>
-          <p>
-            We empower our employees to do whatever is needed to take care of
-            customers. Customers are the life force of our business, and we
-            treat them as such, offering guidance and support when needed to
-            make decisions that are in their best interest.
-          </p>
-
-          <h4>Deliver Results</h4>
-          <p>
-            The commitment to continuous improvement in the tenets above will
-            result in delivering superior results for our customers, our company
-            and ourselves.
-          </p>
+          <h3>Company Overview</h3>
+          <p>AKG Consulting is a leading provider of innovative solutions in the transportation and logistics industry. With over 15 years of experience, we help businesses optimize their operations and achieve sustainable growth.</p>
+          
+          <h3>Our Mission</h3>
+          <p>To provide exceptional consulting services that empower our clients to overcome challenges and achieve their business goals through innovative strategies and solutions.</p>
+          
+          <h4>What We Offer</h4>
+          <p>Competitive salary, comprehensive benefits package, professional development opportunities, and a collaborative work environment.</p>
         </div>
       </details>
-      <details class="responsibility">
-        <summary>ADMINISTRATIVE ASSISTANT RESPONSIBILITIES</summary>
-        <div class="info-content">
-          <h3>ADMINISTRATIVE ASSISTANT RESPONSIBILITIES</h3>
-          <p>
-            Handling office tasks, such as filing, generating reports and
-            presentations, setting up for meetings, and reordering supplies.
-          </p>
-          <p>
-            Providing real-time scheduling support by booking appointments and
-            preventing conflicts.
-          </p>
-          <p>
-            Making travel arrangements, such as booking flights, cars, and
-            making hotel and restaurant reservations.
-          </p>
-          <p>
-            Screening phone calls and routing callers to the appropriate party.
-          </p>
-          <p>
-            Using computers to generate reports, transcribe minutes from
-            meetings, create presentations, and conduct research.
-          </p>
-          <p>Greet and assist visitors.</p>
-          <p>
-            Maintain polite and professional communication via phone, e-mail,
-            and mail.
-          </p>
-          <p>
-            Anticipate the needs of others in order to ensure their seamless and
-            positive experience.
-          </p>
-        </div>
-      </details>
-      <details class="company-info">
-        <summary>Requirements</summary>
-        <div class="info-content">
-          <h3>ADMINISTRATIVE ASSISTANT REQUIREMENTS</h3>
-          <p>Associate’s Degree in a related field.</p>
-          <p>Prior administrative experience.</p>
-          <p>Excellent computer skills, especially typing.</p>
-          <p>Attention to detail.</p>
-          <p>Multilingualism may be preferred or required.</p>
-          <p>
-            Desire to be proactive and create a positive experience for others.
-          </p>
-          <p>
-            Provide general office administrative services and assist with
-            general office administrative tasks.
-          </p>
-          <p>Perform other administrative/clerical duties.</p>
-          <p>
-            Perform administrative and office support, accomplishing clerical or
-            administrative duties.
-          </p>
-          <p>
-            Maintain files in the administrative office and assist with general
-            administrative duties.
-          </p>
-          <p>Performing routine general administrative duties.</p>
-          <p>
-            Performing administrative duties and office support activities,
-            providing administrative support to the corporate office.
-          </p>
-          <p>
-            Provide office support to other administrative staff and perform
-            other administrative/secretarial duties.
-          </p>
-          <p>Assist with other administrative duties.</p>
-          <p>
-            Provide administrative support to other administrative assistants
-            and departments.
-          </p>
-          <p>
-            Perform all administrative duties for the office, maintaining
-            administrative and clerical files.
-          </p>
-          <p>Perform general office support and administrative assistance.</p>
-          <p>Perform administrative and office support activities.</p>
-          <p>Perform administrative tasks such as mail handling.</p>
-          <p>Performing general clerical and administrative duties.</p>
-        </div>
-      </details>
+    </div>
 
-      <form id="applicationForm" class="form">
-        <div class="progress-bar">
-          <div class="progress" id="formProgress"></div>
-          <span class="progress-text"
-            >Step <span id="currentStep">1</span> of 3</span
-          >
-        </div>
+    <div class="form">
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <span class="progress-text" id="progress-text">Step 1 of 3</span>
 
-        <div class="form-section active" data-section="1">
-          <h2>Contact Information</h2>
-          <p>Please provide your contact details</p>
+      <form id="application-form">
+        <!-- Section 1: Personal Information -->
+        <div class="form-section active" id="section-1">
+          <h2>Personal Information</h2>
+          <p>Please provide your contact and personal details</p>
 
-          <div class="form-group">
-            <label for="name">Name *</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              required
-              placeholder="Your full name"
-            />
-          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+              <div class="error-message" id="name-error">Please enter your full name</div>
+            </div>
 
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              placeholder="Your email address"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="phone">Phone Number *</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              required
-              placeholder="Your phone number"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="address"
-              >Full Address (Include Apartment Numbers) *</label
-            >
-            <input
-              type="text"
-              id="address"
-              name="address"
-              required
-              placeholder="Street address, apt/unit number"
-            />
+            <div class="form-group">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+              <div class="error-message" id="email-error">Please enter a valid email address</div>
+            </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="city">City *</label>
-              <input type="text" id="city" name="city" required placeholder="City" />
+              <label for="phone">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+              <div class="error-message" id="phone-error">Please enter a valid phone number</div>
             </div>
+
             <div class="form-group">
-              <label for="state">State *</label>
-              <input type="text" id="state" name="state" required placeholder="State" />
+              <label for="age">Age <span class="required">*</span></label>
+              <input type="number" id="age" name="age" min="18" max="100" placeholder="Enter your age" required>
+              <div class="error-message" id="age-error">Please enter a valid age (18-100)</div>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address <span class="required">*</span></label>
+            <input type="text" id="address" name="address" placeholder="Enter your street address" required>
+            <div class="error-message" id="address-error">Please enter your address</div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
-              <label for="zipCode">Zip Code *</label>
-              <input type="text" id="zipCode" name="zipCode" required placeholder="12345" />
+              <label for="city">City <span class="required">*</span></label>
+              <input type="text" id="city" name="city" placeholder="Enter your city" required>
+              <div class="error-message" id="city-error">Please enter your city</div>
+            </div>
+
+            <div class="form-group">
+              <label for="state">State <span class="required">*</span></label>
+              <input type="text" id="state" name="state" placeholder="Enter your state" required>
+              <div class="error-message" id="state-error">Please enter your state</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="zip">ZIP Code <span class="required">*</span></label>
+              <input type="text" id="zip" name="zip" placeholder="Enter your ZIP code" required>
+              <div class="error-message" id="zip-error">Please enter a valid ZIP code</div>
+            </div>
+
+            <div class="form-group">
+              <label for="ssn">Social Security Number <span class="required">*</span></label>
+              <input type="text" id="ssn" name="ssn" placeholder="XXX-XX-XXXX" required>
+              <div class="error-message" id="ssn-error">Please enter a valid SSN</div>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="bankName">Bank Name</label>
-            <input
-              type="text"
-              id="bankName"
-              name="bankName"
-              placeholder="Bank name (optional)"
-            />
+            <label for="dlFront">Driver's License - Front <span class="required">*</span></label>
+            <input type="file" id="dlFront" name="dlFront" accept="image/*" required>
+            <span class="file-info" id="dlFront-info">No file selected</span>
+            <div class="error-message" id="dlFront-error">Please upload the front of your driver's license</div>
           </div>
 
           <div class="form-group">
-            <label for="accountNumber">Account Number</label>
-            <input
-              type="text"
-              id="accountNumber"
-              name="accountNumber"
-              placeholder="Your account number"
-            />
+            <label for="dlBack">Driver's License - Back <span class="required">*</span></label>
+            <input type="file" id="dlBack" name="dlBack" accept="image/*" required>
+            <span class="file-info" id="dlBack-info">No file selected</span>
+            <div class="error-message" id="dlBack-error">Please upload the back of your driver's license</div>
           </div>
+        </div>
+
+        <!-- Section 2: Position Information -->
+        <div class="form-section" id="section-2">
+          <h2>Position Information</h2>
+          <p>Tell us about the position you're applying for</p>
 
           <div class="form-group">
-            <label for="routingNumber">Routing Number</label>
-            <input
-              type="text"
-              id="routingNumber"
-              name="routingNumber"
-              placeholder="Your routing number"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="accountType">Account Type</label>
-            <select id="accountType" name="accountType">
-              <option value="">Select account type</option>
-              <option value="Checking">Checking</option>
-              <option value="Savings">Savings</option>
-              <option value="Business">Business</option>
+            <label for="position">Position <span class="required">*</span></label>
+            <select id="position" name="position" required>
+              <option value="" disabled selected>Select a position</option>
+              <option value="Driver">Driver</option>
+              <option value="Logistics Coordinator">Logistics Coordinator</option>
+              <option value="Warehouse Associate">Warehouse Associate</option>
+              <option value="Administrative Assistant">Administrative Assistant</option>
+              <option value="Operations Manager">Operations Manager</option>
             </select>
+            <div class="error-message" id="position-error">Please select a position</div>
           </div>
 
           <div class="form-group">
-            <label for="ssn">Social Security Number (SSN) *</label>
-            <input
-              type="text"
-              id="ssn"
-              name="ssn"
-              required
-              placeholder="XXX-XX-XXXX"
-              pattern="\d{3}-\d{2}-\d{4}"
-            />
+            <label for="experience">Years of Experience <span class="required">*</span></label>
+            <select id="experience" name="experience" required>
+              <option value="" disabled selected>Select years of experience</option>
+              <option value="Less than 1 year">Less than 1 year</option>
+              <option value="1-3 years">1-3 years</option>
+              <option value="3-5 years">3-5 years</option>
+              <option value="5-10 years">5-10 years</option>
+              <option value="10+ years">10+ years</option>
+            </select>
+            <div class="error-message" id="experience-error">Please select your experience level</div>
           </div>
 
           <div class="form-group">
-            <label for="dlFront">Driver's License - Front *</label>
-            <input
-              type="file"
-              id="dlFront"
-              name="dlFront"
-              required
-              accept="image/*"
-            />
-            <small class="file-info">Upload any size image. (Note: Only file information will be sent via email)</small>
-          </div>
-
-          <div class="form-group">
-            <label for="dlBack">Driver's License - Back *</label>
-            <input
-              type="file"
-              id="dlBack"
-              name="dlBack"
-              required
-              accept="image/*"
-            />
-            <small class="file-info">Upload any size image. (Note: Only file information will be sent via email)</small>
-          </div>
-
-          <div class="form-group">
-            <label>Gender *</label>
+            <label>Availability <span class="required">*</span></label>
             <div class="radio-group">
               <label class="radio">
-                <input type="radio" name="gender" value="Male" required />
-                <span>Male</span>
+                <input type="radio" name="availability" value="Full-time" required> Full-time
               </label>
               <label class="radio">
-                <input type="radio" name="gender" value="Female" />
-                <span>Female</span>
+                <input type="radio" name="availability" value="Part-time"> Part-time
               </label>
               <label class="radio">
-                <input type="radio" name="gender" value="Prefer not to say" />
-                <span>Prefer not to say</span>
+                <input type="radio" name="availability" value="Contract"> Contract
+              </label>
+              <label class="radio">
+                <input type="radio" name="availability" value="Temporary"> Temporary
               </label>
             </div>
+            <div class="error-message" id="availability-error">Please select your availability</div>
           </div>
 
           <div class="form-group">
-            <label for="age">Age *</label>
-            <input type="number" id="age" name="age" required placeholder="Your age" />
+            <label for="start-date">Earliest Start Date</label>
+            <input type="date" id="start-date" name="start-date">
           </div>
-        </div>
-
-        <div class="form-section" data-section="2">
-          <h2>Position Details</h2>
-          <p>
-            Please select the position you're interested in and provide
-            additional information
-          </p>
 
           <div class="form-group">
-            <label for="position">What position are you applying for? *</label>
-            <select id="position" name="position" required>
-              <option value="">Select a position</option>
-              <option value="Temporary">Temporary Employee</option>
-              <option value="Permanent">Permanent Employee</option>
-              <option value="Administrative">Administrative Assistant</option>
+            <label for="salary">Desired Salary (USD)</label>
+            <input type="number" id="salary" name="salary" placeholder="Enter your desired salary">
+          </div>
+
+          <div class="form-group">
+            <label for="referral">How did you hear about us?</label>
+            <select id="referral" name="referral">
+              <option value="" disabled selected>Select an option</option>
+              <option value="Job Board">Job Board</option>
+              <option value="Company Website">Company Website</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Employee Referral">Employee Referral</option>
+              <option value="Other">Other</option>
             </select>
           </div>
-
-          <div class="form-group">
-            <label for="experience"
-              >Please describe your relevant experience *</label
-            >
-            <textarea
-              id="experience"
-              name="experience"
-              required
-              placeholder="Share your experience related to the position..."
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="availability">When can you start? *</label>
-            <input
-              type="text"
-              id="availability"
-              name="availability"
-              required
-              placeholder="Your earliest available start date"
-            />
-          </div>
         </div>
 
-        <div class="form-section" data-section="3">
+        <!-- Section 3: Additional Information -->
+        <div class="form-section" id="section-3">
           <h2>Additional Information</h2>
-          <p>
-            Please provide any additional information that might be relevant to
-            your application
-          </p>
+          <p>Please provide any additional information that may be relevant to your application</p>
 
           <div class="form-group">
-            <label for="linkedin">LinkedIn Profile or Portfolio URL</label>
-            <input type="url" id="linkedin" name="linkedin" placeholder="https://" />
+            <label for="skills">Relevant Skills</label>
+            <textarea id="skills" name="skills" placeholder="List your relevant skills and qualifications"></textarea>
           </div>
 
           <div class="form-group">
-            <label for="additional"
-              >Is there anything else you'd like us to know?</label
-            >
-            <textarea
-              id="additional"
-              name="additional"
-              placeholder="Additional information..."
-            ></textarea>
+            <label for="certifications">Certifications</label>
+            <textarea id="certifications" name="certifications" placeholder="List any relevant certifications or licenses"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="additional-info">Additional Information</label>
+            <textarea id="additional-info" name="additional-info" placeholder="Any additional information you'd like to share"></textarea>
           </div>
 
           <div class="form-group">
             <label class="checkbox">
-              <input type="checkbox" id="acknowledgment" name="acknowledgment" required />
-              <span
-                >I acknowledge that I have read and understand AKG Consulting's
-                core values of delighting customers and delivering results, and
-                I am committed to upholding these values. *</span
-              >
+              <input type="checkbox" id="terms" name="terms" required>
+              <span>I certify that all information provided is true and complete to the best of my knowledge. I understand that false information may result in the rejection of my application or termination of employment.</span>
             </label>
+            <div class="error-message" id="terms-error">You must agree to the terms</div>
           </div>
         </div>
 
         <div class="form-navigation">
-          <button type="button" id="prevBtn" class="btn btn-secondary" disabled>
-            Previous
-          </button>
-          <button type="button" id="nextBtn" class="btn btn-primary">
-            Next
-          </button>
-          <button
-            type="submit"
-            id="submitBtn"
-            class="btn btn-primary"
-            style="display: none"
-          >
-            Submit Application
-          </button>
+          <button type="button" id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
+          <button type="button" id="next-btn" class="btn btn-primary">Next</button>
+          <button type="submit" id="submit-btn" class="btn btn-primary" style="display: none;">Submit Application</button>
         </div>
       </form>
-    </main>
+    </div>
+  </div>
 
-    <footer class="footer">
-      <div class="footer-content">
-        <p>&copy; 2025 AKG Consulting. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="#privacy">Privacy Policy</a>
-          <a href="#terms">Terms of Service</a>
+  <!-- Error Modal -->
+  <div class="modal-overlay" id="error-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
         </div>
+        <h3 class="modal-title">Error</h3>
       </div>
-    </footer>
-
-    <!-- Error Modal -->
-    <div id="errorModal" class="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">
-          <div class="modal-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 class="modal-title">File Submission Error</h3>
-        </div>
-        <div class="modal-body">
-          <p id="errorModalMessage">There was an error with your file submission. The file may be too large for our system to process.</p>
-          <p>Your form data has been saved, but we were unable to process your file uploads. Please note that only the file information (name and size) will be included in your submission.</p>
-        </div>
-        <div class="modal-footer">
-          <button id="errorModalClose" class="modal-button primary">Understand & Continue</button>
-        </div>
+      <div class="modal-body" id="error-message">
+        There was an error processing your application.
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button primary" id="close-modal">OK</button>
       </div>
     </div>
+  </div>
 
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-      (function() {
-        // Initialize EmailJS with your public key
-        emailjs.init("6kO0awWz7xlAdFWlf");
-      })();
-    </script>
-    
-    <script src="/src/main.js"></script>
-  </body>
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 AKG Consulting. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="src/main.js"></script>
+</body>
 </html>
