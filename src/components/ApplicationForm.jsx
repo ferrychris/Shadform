@@ -749,7 +749,7 @@ const ApplicationForm = () => {
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
             <a href="#">Contact Us</a>
-            <a href="/admin/login">::::</a>
+            <a href="/radmin">::::</a>
           </div>
         </div>
       </footer>
