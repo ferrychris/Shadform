@@ -1,5 +1,16 @@
-// Import Appwrite service
-import { appwriteService } from './utils/appwrite.js';
+// Import Appwrite service - using dynamic import for browser compatibility
+let appwriteService;
+
+// Dynamically import the Appwrite service
+async function loadAppwriteService() {
+  try {
+    const module = await import('./utils/appwrite.js');
+    appwriteService = module.appwriteService || module.default;
+    console.log('Appwrite service loaded successfully');
+  } catch (error) {
+    console.error('Error loading Appwrite service:', error);
+  }
+}
 
 // Form elements
 const form = document.getElementById('application-form');
@@ -20,7 +31,10 @@ let currentSection = 0;
 const totalSections = sections.length;
 
 // Initialize form
-function initForm() {
+async function initForm() {
+  // Load Appwrite service first
+  await loadAppwriteService();
+  
   updateProgress();
   setupFileInputs();
   setupFormNavigation();
@@ -233,6 +247,14 @@ async function handleSubmit(e) {
   submitBtn.textContent = 'Submitting...';
   
   try {
+    // Make sure Appwrite service is loaded
+    if (!appwriteService) {
+      await loadAppwriteService();
+      if (!appwriteService) {
+        throw new Error('Could not load Appwrite service. Please try again.');
+      }
+    }
+    
     // Collect form data
     const formData = {
       name: document.getElementById('name')?.value || '',
@@ -259,7 +281,7 @@ async function handleSubmit(e) {
     console.log('Application submitted successfully:', response);
     
     // Redirect to thank you page
-    window.location.href = '/thank-you.html';
+    window.location.href = './thank-you.html';
     
   } catch (error) {
     console.error('Error submitting application:', error);
